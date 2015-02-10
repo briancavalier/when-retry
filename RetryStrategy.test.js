@@ -21,12 +21,7 @@ describe('ImmediateRetryStrategy', function(){
 			throw new Error('Not feeling like working...');
 		}, 42);
 		return retry().catch(function(error){
-			if(error.message === 'Retry limit reached'){
-				return;
-			}
-			else{
-				throw error;
-			}
+			assert.equal(error.message, 'Retry limit reached');
 		});
 	});
 });
