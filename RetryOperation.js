@@ -1,8 +1,16 @@
 var when = require('when');
 
-function ImmediateTrampoline(){
+function ImmediateTrampoline(retryLimit){
+	var limit = (!isNaN(retryLimit) ? retryLimit : Infinity);
+	var retriesSoFar = 0;
 	return function(retryContinuation){
-		return retryContinuation();
+		retriesSoFar += 1;
+		if(retriesSoFar <= limit){
+			return retryContinuation();
+		}
+		else{
+			throw new Error('Retry limit reached');
+		}
 	};
 }
 
@@ -14,8 +22,8 @@ function RetryStrategy(trampoline, operation){
 	};
 }
 
-function ImmediateRetryStrategy(operation){
-	var trampoline = ImmediateTrampoline();
+function ImmediateRetryStrategy(operation, retryLimit){
+	var trampoline = ImmediateTrampoline(retryLimit);
 	return RetryStrategy(trampoline, operation);
 }
 

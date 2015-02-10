@@ -16,4 +16,17 @@ describe('ImmediateRetryStrategy', function(){
 			assert.equal(operationResult, 'success');
 		});
 	});
+	it('should fail after too many retries', function(){
+		var retry = ImmediateRetryStrategy(function(){
+			throw new Error('Not feeling like working...');
+		}, 42);
+		return retry().catch(function(error){
+			if(error.message === 'Retry limit reached'){
+				return;
+			}
+			else{
+				throw error;
+			}
+		});
+	});
 });
